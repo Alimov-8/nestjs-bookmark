@@ -4,7 +4,7 @@ import { AuthDto } from "./dto";
 
 @Controller('auth')  // e.g. POST auth/signup
 export class AuthController {
-    constructor(private authService: AuthService) {}  // Dependency Injection
+    constructor(private authService: AuthService) {}
 
     @Post('signup')
     signup(@Body() dto: AuthDto) {
