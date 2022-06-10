@@ -5,7 +5,7 @@ import { PrismaService } from './../src/prisma/prisma.service';
 import { AppModule } from './../src/app.module';
 import { AuthDto } from './../src/auth/dto';
 import { EditUserDto } from './../src/user/dto';
-import { CreateBookmarkDto } from './../src/bookmark/dto';
+import { CreateBookmarkDto, EditBookmarkDto } from './../src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -223,9 +223,49 @@ describe('App e2e', () => {
       });
     });
 
-    describe('Edit bookmarks by id', () => {});
+    describe('Edit bookmark by id', () => {
+      const dto: EditBookmarkDto = {
+        title: 'Kubernetes Course',
+        description: 'Lorem Impsum',
+      };
+      it('should edit bookmark', () => {
+        return pactum
+          .spec()
+          .patch('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.title)
+          .expectBodyContains(dto.description);
+      });
+    });
 
-    describe('Delete bookmarks by id', () => {});
+     describe('Delete bookmark by id', () => {
+      it('should delete bookmark', () => {
+        return pactum
+          .spec()
+          .delete('/bookmarks/{id}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(204);
+      });
+
+      it('should get empty bookmarks', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(0);
+      });
+    });
   });
 
   it.todo('should pass')
